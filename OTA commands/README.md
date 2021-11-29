@@ -1,112 +1,58 @@
-# Useful CLI commands
+# OTA server / client commands
 
-## Setting up the network
+## Setting up the Zigbee gateway
 
-plugin network-creator start 1
-plugin network-creator-security open-network
-plugin network-steering start 0
+Start the gateway:
+> ./Z3GatewayHost_664.exe -n 0 -p /dev/ttyS36
 
-## Using preset commands buffer
-<https://docs.silabs.com/zigbee/latest/af/group-on-off>
+- -n = handshaking to use
+- -p = port to use
 
-**zcl on-off toggle** Command description for Toggle
+## Server commands
 
-**zcl on-off on** Command description for On
+Check what images are on the server
+> plugin ota-storage printImages
 
-**zcl on-off off** Command description for Off
-	
-<https://docs.silabs.com/zigbee/latest/af/group-zdo>
+Start the network
+> plugin network-creator start 1
 
-**zdo ieee node_ID** Request an ieee address based on a given node id
+Open then network for joining
+> plugin network-creator-security open-network
 
-**zdo nwk ieee:8** Sends a network address request for the given IEEE address.
+## Client commands
 
-## Set up a binding between devices
+> plugin ota-storage-common printImages
+>
+> plugin ota-storage-common delete 0
+>
+> plugin network-steering start 0
+>
+> plugin ota-client start
+>
+> plugin ota-client bootload 0
 
-**option binding-table set index cluster local ep remote ep EUI**
+## Image builder commands
 
-> option binding-table set 0 0x0006 1 1 { 588E81FFFE72FE72 }
+Create an OTA file from an application with specific version number, image type, manufacturer ID and tag ID.
 
-> option binding-table set 0 0x0000 1 1 { 000B57FFFE07383B }
+> C:\SiliconLabs\SimplicityStudio\v4\developer\sdks\gecko_sdk_suite\v2.6\protocol\zigbee\tool\image-builder\image-builder-windows --create=update_v6.ota --version=0x00000005 --image-type=0x4206 --manuf-id=0x117C --tag-id=0000 --string="signed" --tag-file=myapp.gbl
 
-<https://docs.silabs.com/zigbee/6.3/af_v2/group-zcl-global>
+Create a combined OTA image of application and bootloader 
 
-**zcl global send-me-a-report [cluster:2] [attributeId:2] [dataType:1] [minReportTime:2] [maxReportTime:2] [reportableChange:-1]**
+> C:\SiliconLabs\SimplicityStudio\v4\developer\sdks\gecko_sdk_suite\v2.7\protocol\zigbee\tool\image-builder\image-builder-windows --create=combined_v6_slots.ota --version=0x00000006 --image-type=0x4206 --manuf-id=0x117C --tag-id=0x0000 --string="combined_app_bl" --tag-file=combined_app_bl.gbl
 
-> zcl global send-me-a-report 0x0006 0x0000 0x10 1 15 { 00 }
+## Building GBL files
 
-> zcl global send-me-a-report 0x0000 0xFFFD 0x21 1 15 { 00 }
+Create a standard GBL file from an S37 file:
+> c:\SiliconLabs\SimplicityStudio\v4\developer\adapter_packs\commander\commander gbl create myapp.gbl --app myapp.s37
 
-Send a pre-buffered message from a given endpoint to an endpoint on a device with a given short address.
+Create a signing key for encryption / signing GBL files:
+> c:\SiliconLabs\SimplicityStudio\v4_3\developer\adapter_packs\commander\commander gbl keygen --type ecc-p256 --outfile signing-key
 
-**send [id:2] [src-endpoint:1] [dst-endpoint:1]**
+Write the signing key to the tokens:
 
-> send 0x9AB1 1 1
+> c:\SiliconLabs\SimplicityStudio\v4_3\developer\adapter_packs\commander\commander flash --tokengroup znet --tokenfile signing-key-tokens.txt
 
-- id - INT16U - short id of the device to send the message to
-- src-endpoint - INT8U - The endpoint to send the message from
-- dst-endpoint - INT8U - The endpoint to send the message to
+Create a signed GBL file from an S37 file:
 
-
-## Generating your own commands
-
-Creates a global read command message to read from the cluster and attribute specified
-
-**zcl global read [cluster:2] [attributeId:2]**
-
-> zcl global read 0x0006 0x0000
-
-- cluster - INT16U - The cluster id of the cluster to read from
-- attributeId - INT16U - The attribute id of the attribute to read.
-
-Create a global write command message to write to the cluster and attribute specified
-
-**zcl global write [cluster:2] [attributeId:2] [type:4] [data:-1]**
-
-> zcl global write 0x0006 0x0000 0x10 {01}
-
-- cluster - INT16U - The cluster id of the cluster to write to.
-- attributeId - INT16U - The attribute id of the attribute to write (see attribute_type.h for details)
-- type - INT32U - The type of the attribute to write.
-- data - OCTET_STRING - The data to be written.
-
-Read an attribute from the local (ie on the same device) attribute table. The attribute is displayed on the command line.
-
-**read [endpoint:1] [cluster:2] [attribute:2] [mask:1]**
-
-> read 1 0x0006 0x0000 1
-
-- endpoint - INT8U - endpoint of the attribute to read
-- cluster - INT16U - cluster id of the attribute to read
-- attribute - INT16U - attribute id of the attribute to read
-- mask - INT8U - direction mask of the attribute to read (client=0 or server=1)
-
-Write an attribute value into the local attribute table
-
-**write [endpoint:1] [cluster:2] [attribute:2] [mask:1] [dataType:1] [dataBytes:-1]**
-
-> write 1 0x0006 0x0000 1 0x10 {0}
-
-- endpoint - INT8U - endpoint of the attribute to write
-- cluster - INT16U - cluster id of the attribute to write
-- attribute - INT16U - attribute id of the attribute to write
-- mask - INT8U - direction mask of the attribute to write (client=0 or server=1)
-- dataType - INT8U - the attribute type as listed in the generated file attribute-type.h
-- dataBytes - OCTET_STRING - string of bytes you wish to write into the attribute table.
-
-## Sending Leave commands.
-
-**plugin test-harness z3 mgmt leave [destination:2] [removeChildren:1] [rejoin:1] [options:4]**
-
-- destination - INT16U - The destination address of the command.
-- removeChildren - BOOLEAN - Whether or not the leaving device should remove its children.
-- rejoin - BOOLEAN - Whether or not the destination node should rejoin the network.
-- options - INT32U - The negative behavior options for this command.
-
-**plugin test-harness z3 nwk nwk-leave [rejoin:1] [request:1] [removeChildren:1] [destination:2] [options:4]**
-
-- rejoin - BOOLEAN - Whether or not the device should rejoin.
-- request - BOOLEAN - Whether or not this command is a request.
-- removeChildren - BOOLEAN - Whether or not the leaving device should remove its children.
-- destination - INT16U - The destination address of the command.
-- options - INT32U - The negative behavior options for this command.
+> c:\SiliconLabs\SimplicityStudio\v4_3\developer\adapter_packs\commander\commander gbl create myapp.gbl --app myapp.s37 --sign signing-key
