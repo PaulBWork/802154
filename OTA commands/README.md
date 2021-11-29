@@ -16,7 +16,7 @@ Check what images are on the server
 Start the network
 > plugin network-creator start 1
 
-Open then network for joining
+Open the network for joining
 > plugin network-creator-security open-network
 
 ## Client commands
