@@ -37,7 +37,7 @@ Create an OTA file from an application with specific version number, image type,
 
 > C:\SiliconLabs\SimplicityStudio\v5\developer\sdks\gecko_sdk_suite\v3.1\protocol\zigbee\tool\image-builder\image-builder-windows --create=update_v6.ota --version=0x00000005 --image-type=0x4206 --manuf-id=0x117C --tag-id=0000 --string="signed" --tag-file=myapp.gbl
 
-Create a combined OTA image of application and bootloader 
+Create a combined OTA image of application and bootloader
 
 > C:\SiliconLabs\SimplicityStudio\v5\developer\sdks\gecko_sdk_suite\v3.1\protocol\zigbee\tool\image-builder\image-builder-windows --create=combined_v6_slots.ota --version=0x00000006 --image-type=0x4206 --manuf-id=0x117C --tag-id=0x0000 --string="combined_app_bl" --tag-file=combined_app_bl.gbl
 
@@ -46,7 +46,7 @@ Create a combined OTA image of application and bootloader
 Create a standard GBL file from an S37 file:
 > c:\SiliconLabs\SimplicityStudio\v5\developer\adapter_packs\commander\commander gbl create myapp.gbl --app myapp.s37
 
-Create a GBL file containg application and bootloader: 
+Create a GBL file containg application and bootloader:
 > C:\SiliconLabs\SimplicityStudio\v5\developer\adapter_packs\commander\commander.exe gbl create combined_app_bl.gbl --app Z3LightSoc.s37 --bootloader bootloader-storage-internal-single.s37
 
 Create a signing key for encryption / signing GBL files:
