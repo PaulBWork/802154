@@ -2,9 +2,15 @@
 
 ## Setting up the network
 
+```
 plugin network-creator start 1
+```
+```
 plugin network-creator-security open-network
+```
+```
 plugin network-steering start 0
+```
 
 ## Using preset commands
 
