@@ -2,5 +2,5 @@
 
 Useful Zigbee related notes
 
-1. [CLI commands](CLI%20commands/README.md)
-2. [OTA commands](OTA%20commands/README.md)
+1. [CLI commands](docs/CLI_commands.md)
+2. [OTA commands](docs/OTA_commands.md)
